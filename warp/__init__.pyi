@@ -3602,12 +3602,11 @@ def tile_dot(a: Tile[Any, tuple[int, ...]], b: Tile[Any, tuple[int, ...]]) -> Ti
     it is the Frobenius inner product (the sum of element-wise products
     over all axes).
 
-    Equivalent in Python to ``wp.tile_sum(a * b)`` for scalar tiles and to
-    ``wp.tile_sum(wp.tile_map(wp.dot, a, b))`` for vector tiles, but
+    Equivalent in Python to ``wp.tile_sum(a * b)`` for scalar tiles,
+    ``wp.tile_sum(wp.tile_map(wp.dot, a, b))`` for vector tiles, and
+    ``wp.tile_sum(wp.tile_map(wp.ddot, a, b))`` for matrix tiles, but
     without the intermediate tile and shared-memory round trip the
-    explicit forms would require. Matrix-typed tiles have no
-    purely-elementwise Python equivalent because ``wp.dot`` is not
-    defined for matrices.
+    explicit forms would require.
 
     Args:
         a: First tile operand.
