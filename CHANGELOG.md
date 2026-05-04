@@ -4,6 +4,9 @@
 
 ### Added
 
+- Expose CUDA graph capture mode via `ScopedCapture` / `capture_begin()`
+  ([GH-1410](https://github.com/NVIDIA/warp/issues/1410)).
+
 ### Removed
 
 ### Deprecated

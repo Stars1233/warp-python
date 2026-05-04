@@ -174,6 +174,7 @@ from warp._src.context import get_device_allocator as get_device_allocator
 from warp._src.context import set_cuda_allocator as set_cuda_allocator
 from warp._src.context import set_device_allocator as set_device_allocator
 from warp._src.utils import ScopedAllocator as ScopedAllocator
+from warp._src.context import CaptureMode as CaptureMode
 from warp._src.utils import ScopedCapture as ScopedCapture
 from warp._src.context import is_conditional_graph_supported as is_conditional_graph_supported
 from warp._src.context import Graph as Graph
