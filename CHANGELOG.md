@@ -13,6 +13,9 @@
 - Add batched-input support to `warp.optim.linear` solvers: a `LinearOperator` built with `batch_offsets`
   partitions the DOF vector into independent subproblems that are all solved in a single launch sequence,
   with per-batch convergence checks ([GH-1391](https://github.com/NVIDIA/warp/issues/1391)).
+- Add `--sanitize=<name>` build option to `build_lib.py`, enabling AddressSanitizer builds of
+  `warp.dll` and `warp-clang.dll` on Windows, Linux, and macOS
+  ([GH-1387](https://github.com/NVIDIA/warp/issues/1387)).
 
 ### Removed
 
