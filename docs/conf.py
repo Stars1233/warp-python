@@ -231,6 +231,12 @@ autosummary_filename_map = {
     "warp.launch": "warp.launch_function",
     "warp.fem.cells": "warp.fem.cells_function",
     "warp.fem.integrand": "warp.fem.integrand_decorator",
+    # Linear solver functions share names with their functor classes (cg vs CG, etc.);
+    # suffix the function stubs so they don't collide on case-insensitive filesystems.
+    "warp.optim.linear.cg": "warp.optim.linear.cg_function",
+    "warp.optim.linear.cr": "warp.optim.linear.cr_function",
+    "warp.optim.linear.bicgstab": "warp.optim.linear.bicgstab_function",
+    "warp.optim.linear.gmres": "warp.optim.linear.gmres_function",
 }
 
 # Map internal builtin function paths to public names for output filenames.

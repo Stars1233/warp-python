@@ -6,6 +6,13 @@
 
 - Expose CUDA graph capture mode via `ScopedCapture` / `capture_begin()`
   ([GH-1410](https://github.com/NVIDIA/warp/issues/1410)).
+- Add pre-allocated functors for `warp.optim.linear` solvers. Passing `run=False` to `cg`, `cr`, `bicgstab`, or `gmres`
+  returns a state object that holds all temporary buffers and can be invoked repeatedly on compatible systems
+  (same shape, batch count, dtype, and device), avoiding per-call allocation overhead and allowing usage in CUDA subgraphs
+  ([GH-1391](https://github.com/NVIDIA/warp/issues/1391)).
+- Add batched-input support to `warp.optim.linear` solvers: a `LinearOperator` built with `batch_offsets`
+  partitions the DOF vector into independent subproblems that are all solved in a single launch sequence,
+  with per-batch convergence checks ([GH-1391](https://github.com/NVIDIA/warp/issues/1391)).
 
 ### Removed
 
