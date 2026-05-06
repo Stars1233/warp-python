@@ -33,6 +33,12 @@
 
 - Suppress the `+avx10.1-256` "invalid feature combination" warning emitted on every CPU kernel
   compile on Intel Granite Rapids hosts ([GH-1426](https://github.com/NVIDIA/warp/issues/1426)).
+- Reject `bfloat16` `out` tiles in `wp.tile_matmul()`. The underlying libmathdx
+  GEMM backend requires `out` to be `float16`, `float32`, or `float64`. When the
+  backward pass is enabled, `bfloat16` `a` and `b` tiles are also rejected (the
+  backward pass uses them as accumulators for `adjA` and `adjB`). Set
+  `enable_backward=False` on the kernel's module if gradients are not needed
+  ([GH-1427](https://github.com/NVIDIA/warp/issues/1427)).
 
 ### Documentation
 

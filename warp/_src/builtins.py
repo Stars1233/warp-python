@@ -12891,6 +12891,25 @@ def tile_matmul_lto_dispatch_func(
             "tile_matmul() arguments must be tiles of float16, bfloat16, float32 or float64, vec2h, vec2f, vec2d entries"
         )
 
+    # Reject bfloat16 as the accumulator precision uniformly across all backends. cuBLASDx
+    # disallows bf16 accumulators (a static_assert since cuBLASDx 0.6.0), and the scalar
+    # matmul fallback was silently lossy for the same reason. The K-loop reduction precision
+    # is derived from 'out's dtype regardless of which calling form is used. If backward is
+    # enabled, 'a' and 'b' are also accumulators (for adjA, adjB).
+    if out.type.dtype == bfloat16:
+        raise TypeError(
+            "tile_matmul() does not support a bfloat16 'out' tile. "
+            "Allowed 'out' dtypes are float16, float32, and float64."
+        )
+    if options["enable_backward"] and (a.type.dtype == bfloat16 or b.type.dtype == bfloat16):
+        raise TypeError(
+            "tile_matmul() does not support bfloat16 'a' or 'b' tiles when the backward pass is enabled. "
+            "Allowed accumulator dtypes are float16, float32, and float64 (the backward pass uses 'a' "
+            "and 'b' as accumulators for adjA and adjB). If gradients are not needed, set "
+            "`enable_backward=False` on the kernel's module, e.g. "
+            "`wp.set_module_options({'enable_backward': False})`."
+        )
+
     if (
         (a.type.shape[1] != b.type.shape[0])
         or (a.type.shape[0] != out.type.shape[0])
