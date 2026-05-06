@@ -734,7 +734,7 @@ def build_dll_for_arch(args, dll_path, cpp_paths, cu_paths, arch, libs: list[str
         cpp_flags = f'-Werror -Wuninitialized {version} --std=c++17 -fno-rtti -D{cuda_enabled} -D{mathdx_enabled} -D{cuda_compat_enabled} -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -D_GLIBCXX_USE_CXX11_ABI=0 -I"{native_dir}" {includes} '
 
         if mode == "debug":
-            cpp_flags += "-O0 -g -D_DEBUG -DWP_ENABLE_DEBUG=1 -fkeep-inline-functions"
+            cpp_flags += "-Og -g -D_DEBUG -DWP_ENABLE_DEBUG=1"
 
         if mode == "release":
             cpp_flags += "-O3 -DNDEBUG -DWP_ENABLE_DEBUG=0"
@@ -758,15 +758,9 @@ def build_dll_for_arch(args, dll_path, cpp_paths, cu_paths, arch, libs: list[str
                 cpp_out = cpp_path + _obj_tag + ".o"
                 ld_inputs.append(quote(cpp_out))
                 extra_flags = ""
-                file_cpp_flags = cpp_flags
                 if "fastcall.cpp" in cpp_path:
                     extra_flags = f' -I"{python_include_dir}" -DPy_LIMITED_API=0x030a0000'  # Python 3.10
-                    # -fkeep-inline-functions emits unused inline bodies from <Python.h> that
-                    # reference Python data symbols (PyType_Type, PyBool_Type, PyExc_*, ...);
-                    # those eager imports would prevent warp.so from loading in non-Python hosts.
-                    # The postlink check below (search "eagerly-resolved Py") enforces this.
-                    file_cpp_flags = cpp_flags.replace(" -fkeep-inline-functions", "")
-                cpp_cmd = f'{cpp_compiler} {file_cpp_flags}{extra_flags} -c "{cpp_path}" -o "{cpp_out}"'
+                cpp_cmd = f'{cpp_compiler} {cpp_flags}{extra_flags} -c "{cpp_path}" -o "{cpp_out}"'
                 cpp_cmds.append(cpp_cmd)
 
             if args.jobs <= 1:

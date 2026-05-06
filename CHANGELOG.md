@@ -28,6 +28,9 @@
   actionable error when missing ([GH-1339](https://github.com/NVIDIA/warp/issues/1339)).
 - Allow `launch_dims` to be specified when `enable_backward=True` in `warp.jax_experimental.jax_kernel()`
   ([GH-1380](https://github.com/NVIDIA/warp/issues/1380)).
+- Build the native library with `-Og -g` instead of `-O0 -g -fkeep-inline-functions` on Linux/macOS debug builds.
+  This enables debug-friendly optimizations, restores `-Wuninitialized` dataflow analysis, and avoids leaking
+  unused inline function bodies from `<Python.h>` ([GH-1414](https://github.com/NVIDIA/warp/issues/1414)).
 
 ### Fixed
 

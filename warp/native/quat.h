@@ -359,7 +359,7 @@ inline CUDA_CALLABLE quat_t<Type> quat_from_matrix(const mat_t<Rows, Cols, Type>
     static_assert((Rows == 3 && Cols == 3) || (Rows == 4 && Cols == 4), "Non-square matrix");
 
     const Type tr = m.data[0][0] + m.data[1][1] + m.data[2][2];
-    Type x, y, z, w, h = Type(0);
+    Type x = Type(0), y = Type(0), z = Type(0), w = Type(0), h = Type(0);
 
     if (tr >= Type(0)) {
         h = sqrt(tr + Type(1));
@@ -1461,7 +1461,7 @@ adj_quat_from_matrix(const mat_t<Rows, Cols, Type>& m, mat_t<Rows, Cols, Type>& 
     static_assert((Rows == 3 && Cols == 3) || (Rows == 4 && Cols == 4), "Non-square matrix");
 
     const Type tr = m.data[0][0] + m.data[1][1] + m.data[2][2];
-    Type x, y, z, w, h = Type(0);
+    Type x = Type(0), y = Type(0), z = Type(0), w = Type(0), h = Type(0);
 
     Type dx_dm00 = Type(0), dx_dm01 = Type(0), dx_dm02 = Type(0);
     Type dx_dm10 = Type(0), dx_dm11 = Type(0), dx_dm12 = Type(0);
