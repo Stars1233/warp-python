@@ -114,6 +114,12 @@ static const HostCpuInfo& get_host_cpu_info()
         llvm::sys::getHostCPUFeatures(feature_map);
 
         for (const auto& f : feature_map) {
+            // Skip avx10.1-256: getHostCPUFeatures() reports it on Intel Granite Rapids,
+            // but Clang treats it as an invalid feature combination and warns that it
+            // will be promoted to avx10.1-512 (one warning per compile).
+            if (f.first() == "avx10.1-256") {
+                continue;
+            }
             std::string flag = (f.second ? "+" : "-") + f.first().str();
             result.feature_list.push_back(flag);
             if (!result.features.empty())

@@ -31,6 +31,9 @@
 
 ### Fixed
 
+- Suppress the `+avx10.1-256` "invalid feature combination" warning emitted on every CPU kernel
+  compile on Intel Granite Rapids hosts ([GH-1426](https://github.com/NVIDIA/warp/issues/1426)).
+
 ### Documentation
 
 ## [1.13.0] - 2026-05-04
