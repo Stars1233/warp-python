@@ -40,6 +40,7 @@ jobs:
         with:
           name: html-docs
           path: docs/_build/html/
+          retention-days: ${{ github.repository == 'NVIDIA/warp' && 7 || 1 }}
       - name: Deploy to gh-pages
         run: |
           git config --global user.email "actions@github.com"

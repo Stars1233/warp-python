@@ -90,6 +90,7 @@ jobs:
         with:
           name: build-artifact-${{ matrix.platform }}
           path: warp/bin/
+          retention-days: ${{ github.repository == 'NVIDIA/warp' && 7 || 1 }}
       
 
   test-warp:
@@ -268,6 +269,7 @@ jobs:
             warp/__init__.pyi
             docs/api_reference
             docs/language_reference
+          retention-days: ${{ github.repository == 'NVIDIA/warp' && 7 || 1 }}
 
   check-build-docs-output:
     if: github.event_name != 'schedule' || github.repository == 'NVIDIA/warp'

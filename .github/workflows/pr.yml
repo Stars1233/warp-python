@@ -98,3 +98,4 @@ jobs:
         with:
           name: cppcheck-report
           path: cppcheck-report.xml
+          retention-days: ${{ github.repository == 'NVIDIA/warp' && 7 || 1 }}
