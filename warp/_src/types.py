@@ -3970,7 +3970,7 @@ class array(Array[DType, NDim]):
     def mark_write(self, **kwargs):
         """Detect if we are writing to an array that has already been read from."""
         if self._is_read:
-            if "arg_name" and "kernel_name" and "filename" and "lineno" in kwargs:
+            if "arg_name" in kwargs and "kernel_name" in kwargs and "filename" in kwargs and "lineno" in kwargs:
                 print(
                     f"Warning: Array {self} passed to argument {kwargs['arg_name']} in kernel {kwargs['kernel_name']} at {kwargs['filename']}:{kwargs['lineno']} is being written to but has already been read from in a previous launch. This may corrupt gradient computation in the backward pass."
                 )

@@ -802,7 +802,7 @@ class Var:
 
         # detect if we are writing to an array after reading from it within the same kernel
         if self.is_read and warp._src.codegen.options.get("verify_autograd_array_access", False):
-            if "kernel_name" and "filename" and "lineno" in kwargs:
+            if "kernel_name" in kwargs and "filename" in kwargs and "lineno" in kwargs:
                 print(
                     f"Warning: Array passed to argument {self.label} in kernel {kwargs['kernel_name']} at {kwargs['filename']}:{kwargs['lineno']} is being written to after it has been read from within the same kernel. This may corrupt gradient computation in the backward pass."
                 )
