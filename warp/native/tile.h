@@ -73,105 +73,117 @@ template <> struct wp_is_null_func<int> {
 
 /* Tile Expressions
 
-[ ] Tiles
+[x] Core
     [x] Register, Shared, Global
-    [ ] Layouts
-        [x] Simple
-        [ ] Cute
-    [x] Remove Alloc type from tile_shared_t
+    [x] Layouts (missing cuTe)
     [x] wp.launch_tiled() helper
 [ ] Creation
     [x] zeros
     [x] ones
+    [x] full
     [x] arange
     [x] tile()
     [x] untile()
+    [x] tile_from_thread()
+    [x] tile_randi() / tile_randf()
+    [ ] empty
     [ ] fromfunction()
-    [ ] explicit storage
 [ ] Load/Store
-    [ ] 1D load/store variants
-    [ ] max_coord option for non-aligned loads
-    [ ] Indexed load
+    [x] tile_load / tile_store (1D-4D)
+    [x] tile_load_indexed / tile_store_indexed
     [x] wp.tile_atomic_add()
+    [x] wp.tile_atomic_add_indexed()
+    [x] tile_scatter_add / tile_scatter_masked
+    [x] Vectorized loads
+    [x] Coalesced loads
+    [ ] tile_atomic_min / tile_atomic_max
+    [ ] tile_atomic_cas (compare-and-swap)
+    [ ] Multi-dimensional gather/scatter (index tiles per dimension)
+    [ ] Mask support for load/store ops
+    [ ] Async copy / software pipelining (cp.async, multi-stage buffering)
+    [ ] TMA (Tensor Memory Accelerator, Hopper+)
 [ ] Maps
     [x] Support user functions
     [x] Support built-in functions
-    [ ] Support for lambda functions
-    [ ] Infer tile_map() output from operator type (e.g.: dot for each element)
+    [x] Unary, binary, and variadic tile_map()
+    [x] Infer tile_map() output from operator type (e.g.: dot for each element)
+    [ ] tile_where(cond, a, b) for conditional element selection (ReLU)
 [ ] Reductions
-    [x] Sum
-        [x] Forward
-        [x] Reverse
-    [x] Min
-    [x] Max
-    [x] Custom
-[x] MatMul
-    [x] Forward
-    [x] Reverse
-[ ] Operators
-    [ ] +, -, *, /, @?
-    [ ] += for matmul, e.g.: c += a@b, or c = a@b
+    [x] Sum (forward + reverse)
+    [x] Sum along axis (tile_reduce_axis)
+    [x] Min / Max
+    [x] Argmin / Argmax
+    [x] Custom (tile_reduce)
+    [ ] Histogram (block-level binning)
+[x] Scans
+    [x] tile_scan_inclusive / tile_scan_exclusive
+    [x] tile_scan_max_inclusive / tile_scan_min_inclusive
+[x] Operators
+    [x] +, -, *, / (element-wise)
+    [x] +=, -= (in-place)
+    [x] &, |, ^ and &=, |=, ^= (bitwise)
+    [x] Scalar-tile and tile-scalar multiplication/division
 [ ] Reshape
-    [ ] Broadcasting
-    [ ] Transpose
-        [x] Shared
-        [ ] Register
-    [ ] Slice
-[ ] Runtime
-    [x] Compile-time block dimensions
-    [x] Switch between SIMT / Tile based execution if `block_dim` not provided to wp.launch()
+    [x] Broadcasting (tile_broadcast)
+    [x] Reshape (tile_reshape, tile_squeeze)
+    [x] View / subscript (tile_view)
+    [x] Type conversion (tile_astype)
+    [x] Transpose (via shared memory)
+    [ ] Slice assignment
+[x] Linear Algebra
+    [x] tile_matmul (+ in-place variants)
+    [x] tile_cholesky / tile_cholesky_solve (+ in-place variants)
+    [x] tile_lower_solve / tile_upper_solve (+ in-place variants)
+    [x] tile_diag_add
+    [x] tile_axpy
+    [x] tile_dot
+    [x] tile_fft / tile_ifft
+[x] Sort
+    [x] tile_sort (radix sort, key-value)
+[x] Spatial Queries
+    [x] tile_bvh_query_aabb / tile_bvh_query_ray
+    [x] tile_mesh_query_aabb
+[x] Stack
+    [x] tile_stack / push / pop / clear / count
 [ ] Examples
+    [x] GEMM (example_tile_matmul.py)
+    [x] MLP (example_tile_mlp.py)
+    [x] Convolution (example_tile_convolution.py)
+    [x] FFT (example_tile_fft.py)
+    [x] Filtering (example_tile_filtering.py)
+    [x] Cholesky (example_tile_cholesky.py, example_tile_block_cholesky.py)
+    [x] N-Body (example_tile_nbody.py)
+    [x] Stream Compaction (example_tile_stream_compaction.py)
+    [x] Monte Carlo Geometry Processing (example_tile_mcgp.py)
     [ ] Point registration
-    [ ] GEMM
-    [ ] MLP
     [ ] LayerNorm
     [ ] SoftMax
-    [ ] GEMM
     [ ] Batched MLP
-    [ ] Layer norm
-    [ ] FNO + Burgers equation
-    [ ] Stochastic financial modeling
-    [ ] Convolution: https://github.com/NVIDIA/MinkowskiEngine/blob/master/src/convolution_kernel.cu#L123
-    [ ] MeshCNN (Modulus, Oliver)
-    [ ] BioNemo (Ali)
-    [ ] Skinning (David/Or/Vismay)
-[ ] Error checking
-    [ ] Ensure functions passed to tile_map() are compatible with tile type
-    [ ] Ensure that args passed to tile ops are compatible
-    [ ] Ensure tile load/store operations don't go out of bounds of arrays in debug mode
+[x] Element Access
+    [x] tile_extract (1D-5D)
+    [x] tile_assign (at coordinate offsets, 1D-4D)
+[ ] Differentiation
+    [x] tile_load / tile_store / tile_atomic_add
+    [x] tile_matmul (forward + reverse)
+    [x] tile_sum (forward + reverse)
+    [x] tile_transpose
+    [x] tile_broadcast
+    [x] tile_map (unary + binary, custom adjoint via operator)
+    [x] tile_reshape / tile_squeeze / tile_astype
+    [x] tile_dot / tile_axpy
+    [x] tile_cholesky (in-place)
+    [x] tile_fft / tile_ifft (GPU only, no-op on CPU)
+    [ ] tile_min / tile_max (subgradient not implemented)
+    [ ] tile_reduce (general, for differentiable ops)
+    [ ] tile_scan_inclusive / tile_scan_exclusive
+    [ ] tile_scan_max_inclusive / tile_scan_min_inclusive
+    [ ] tile_cholesky_solve / tile_lower_solve / tile_upper_solve
+    [ ] tile_diag_add (trivial: gradient passes through)
+    [ ] tile_sort (requires tracking permutation indices)
+[x] Error checking
+    [x] Ensure tile load/store operations don't go out of bounds of arrays in debug mode
+    [x] Shared memory overflow detection (warn when total shared tile allocation exceeds SM limit)
 
-*/
-
-/*
-Notes on shared memory synchronization
-======================================
-
-Synchronous loads call WP_TILE_SYNC() before returning, ensuring
-subsequent reads do not race with the write.
-
-For tile_shared_t adjoints, the gradient accumulation is done through shared
-memory atomics, i.e.: atomic_add(), since for broadcast tiles multiple threads
-may map to the same location. Synchronization is still required after these
-updates, since subsequent operations e.g.: adj_tile_load() will store the
-gradients to memory, and all updates must be visible at that point, e.g.:
-
-    a = wp.tile_load(...)
-    b = wp.tile_load(...)
-    c = wp.tile_matmul(a, b)
-    wp.tile_store(c)
-
-    // loads incoming adjoints from global -> shared
-    wp.adj_tile_store(c, adj_c)
-    // consumes adj_c, requires synchronization
-    wp.adj_tile_matmul(a, b, adj_a, adj_b, adj_c)
-    // consumes adj_b, requires synchronization
-    wp.adj_tile_load(..., adj_b)
-    // consumes adj_b, requires synchronization
-    wp.adj_tile_load(..., adj_a)
-
-Generally synchronization to adjoint tiles will happen through the
-tile_shared_t::add() and tile_shared_t::assign() function automatically,
-but in some cases e.g.: tile_matmul() it is done manually.
 */
 
 namespace wp {
@@ -1250,6 +1262,37 @@ template <typename Shape_, typename Stride_ = typename compute_strides<Shape_>::
     static inline CUDA_CALLABLE bool valid(int linear) { return linear < Size; }
 };
 
+/*
+Notes on shared memory synchronization
+======================================
+
+Synchronous loads call WP_TILE_SYNC() before returning, ensuring
+subsequent reads do not race with the write.
+
+For tile_shared_t adjoints, the gradient accumulation is done through shared
+memory atomics, i.e.: atomic_add(), since for broadcast tiles multiple threads
+may map to the same location. Synchronization is still required after these
+updates, since subsequent operations e.g.: adj_tile_load() will store the
+gradients to memory, and all updates must be visible at that point, e.g.:
+
+    a = wp.tile_load(...)
+    b = wp.tile_load(...)
+    c = wp.tile_matmul(a, b)
+    wp.tile_store(c)
+
+    // loads incoming adjoints from global -> shared
+    wp.adj_tile_store(c, adj_c)
+    // consumes adj_c, requires synchronization
+    wp.adj_tile_matmul(a, b, adj_a, adj_b, adj_c)
+    // consumes adj_b, requires synchronization
+    wp.adj_tile_load(..., adj_b)
+    // consumes adj_b, requires synchronization
+    wp.adj_tile_load(..., adj_a)
+
+Generally synchronization to adjoint tiles will happen through the
+tile_shared_t::add() and tile_shared_t::assign() function automatically,
+but in some cases e.g.: tile_matmul() it is done manually.
+*/
 
 template <typename T, typename L, bool Owner_ = true> struct tile_shared_t {
     using Type = T;
