@@ -19,8 +19,15 @@ import warp as wp
 class HalfFloatConversion:
     """Benchmark half-float conversion via METH_FASTCALL and ctypes paths."""
 
-    repeat = 200
-    number = 1  # Each benchmark function loops internally to minimize call overhead.
+    # Sampling tuned for ~30ns per-call overhead on the omniperf L40 cluster.
+    # Per-measurement batches are long enough that a single timer interrupt or
+    # context switch can't dominate one sample; warmup discards cold iterations;
+    # min_run_count keeps asv from short-circuiting on benchmarks that turn out
+    # noisy. Each measurement runs ~1.6 ms, so 300 repeats ~ 0.5 s per benchmark.
+    repeat = 300
+    number = 1
+    warmup_time = 0.1
+    min_run_count = 10
 
     def setup(self):
         wp.init()
@@ -31,32 +38,32 @@ class HalfFloatConversion:
 
     def time_float_to_half_bits_fastcall(self):
         fn = self.core.wp_float_to_half_bits
-        for _ in range(10_000):
+        for _ in range(50_000):
             fn(1.0)
 
     def time_float_to_half_bits_ctypes(self):
         fn = self.ctypes.wp_float_to_half_bits
-        for _ in range(1_000):
+        for _ in range(5_000):
             fn(1.0)
 
     def time_half_bits_to_float_fastcall(self):
         fn = self.core.wp_half_bits_to_float
-        for _ in range(10_000):
+        for _ in range(50_000):
             fn(0x3C00)
 
     def time_half_bits_to_float_ctypes(self):
         fn = self.ctypes.wp_half_bits_to_float
-        for _ in range(1_000):
+        for _ in range(5_000):
             fn(0x3C00)
 
     def time_round_trip_fastcall(self):
         to_half = self.core.wp_float_to_half_bits
         to_float = self.core.wp_half_bits_to_float
-        for _ in range(10_000):
+        for _ in range(50_000):
             to_float(to_half(1.0))
 
     def time_round_trip_ctypes(self):
         to_half = self.ctypes.wp_float_to_half_bits
         to_float = self.ctypes.wp_half_bits_to_float
-        for _ in range(1_000):
+        for _ in range(5_000):
             to_float(to_half(1.0))

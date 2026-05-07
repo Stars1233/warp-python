@@ -679,110 +679,6 @@ linux-x86_64 python matrix test:
   script:
     - uv run --extra dev -m warp.tests --junit-report-xml rspec.xml -s autodetect --failfast
 
-# Build Warp for ASV benchmarks on a CPU runner to avoid wasting GPU time
-# on compilation. The benchmark job downloads the build cache artifact.
-# This is a build-stage job placed here alongside its companion benchmark
-# job for readability.
-linux-x86_64 asv build:
-  stage: build
-  needs: []
-  image: $WARP_BUILDER_IMAGE_CU12
-  timeout: 24h
-  extends:
-    - .ipp_lnx_x86_64_cpu_medium
-  variables:
-    IPP_RUNNER_EXECUTION_DURATION: "3600"
-    GIT_DEPTH: "50"
-    CUDA_HOME: "/usr/local/cuda"
-  rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-      changes:
-        - .gitlab-ci.yml
-        - asv/**/*
-        - asv.conf.json
-        - warp/**/*
-        - pyproject.toml
-        - deps/*
-        - build_lib.py
-        - build_llvm.py
-  before_script:
-    - echo -e "\\e[0Ksection_start:`date +%s`:install_dependencies[collapsed=true]\\r\\e[0KInstalling dependencies"
-    - df -h
-    # Remove /shared/local/bin from PATH - contains musl-linked binaries from the ephemeral
-    # runner (v1.5.1+) that are incompatible with this glibc-based container
-    - export PATH=$(echo "$PATH" | sed 's|:/shared/local/bin||g; s|/shared/local/bin:||g')
-    # Make sure the comparison ref can be checked out by asv
-    - COMPARE_REF="${CI_MERGE_REQUEST_TARGET_BRANCH_SHA:-${CI_MERGE_REQUEST_TARGET_BRANCH_NAME:-main}}"
-    - 'echo "COMPARE_REF value: ${COMPARE_REF}"'
-    - git config --global --add safe.directory $CI_PROJECT_DIR
-    - git fetch origin $COMPARE_REF
-    - git checkout -f $COMPARE_REF
-    - git checkout -f $CI_COMMIT_SHA
-    - echo -e "\\e[0Ksection_end:`date +%s`:install_dependencies\\r\\e[0K"
-  script:
-    - uvx asv machine --machine asv-build --yes
-    - rc=0; uvx asv continuous --quick -b PythonBuiltins $COMPARE_REF $CI_COMMIT_SHA || rc=$?; if [ $rc -gt 1 ]; then exit $rc; fi
-    # Strict gate: discovery or import errors in the benchmark suite must fail
-    # the pipeline. The `asv continuous` call above returns 1 for both true
-    # regressions and hard errors, so a standalone `asv check` is needed.
-    # asv check resolves `main^{commit}` from asv.conf.json's `branches`, but
-    # the CI checkout leaves us on a detached HEAD with no local `main`, so
-    # pin one at the current commit first.
-    - git branch -f main $CI_COMMIT_SHA
-    - uvx asv check --verbose
-  artifacts:
-    paths:
-      - asv/env/
-    expire_in: 1 week
-
-# Benchmark this commit with the current main branch using Airspeed Velocity
-# Only runs on merge requests
-linux-x86_64 asv:
-  stage: test
-  needs: ["linux-x86_64 asv build"]
-  image: $WARP_BUILDER_IMAGE_CU12
-  timeout: 24h
-  extends:
-    - .ipp_lnx_x86_64_gpu
-  variables:
-    IPP_RUNNER_EXECUTION_DURATION: "3600"
-    GIT_DEPTH: "50"
-    CUDA_HOME: "/usr/local/cuda"
-  rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-      changes:
-        - .gitlab-ci.yml
-        - asv/**/*
-        - asv.conf.json
-        - warp/**/*
-        - pyproject.toml
-        - deps/*
-        - build_lib.py
-        - build_llvm.py
-  before_script:
-    - echo -e "\\e[0Ksection_start:`date +%s`:install_dependencies[collapsed=true]\\r\\e[0KInstalling dependencies"
-    - df -h
-    # Remove /shared/local/bin from PATH - contains musl-linked binaries from the ephemeral
-    # runner (v1.5.1+) that are incompatible with this glibc-based container
-    - export PATH=$(echo "$PATH" | sed 's|:/shared/local/bin||g; s|/shared/local/bin:||g')
-    # Make sure the comparison ref can be checked out by asv
-    - COMPARE_REF="${CI_MERGE_REQUEST_TARGET_BRANCH_SHA:-${CI_MERGE_REQUEST_TARGET_BRANCH_NAME:-main}}"
-    - 'echo "COMPARE_REF value: ${COMPARE_REF}"'
-    - git config --global --add safe.directory $CI_PROJECT_DIR
-    - git fetch origin $COMPARE_REF
-    - git checkout -f $COMPARE_REF
-    - git checkout -f $CI_COMMIT_SHA
-    - echo -e "\\e[0Ksection_end:`date +%s`:install_dependencies\\r\\e[0K"
-  script:
-    - uvx asv machine --machine asv-bench --yes
-    - uvx asv continuous -e --interleave-rounds --append-samples --no-only-changed -f 1.10 --bench '^(?!api)' $COMPARE_REF $CI_COMMIT_SHA 2>&1 || (asv compare --split $COMPARE_REF $CI_COMMIT_SHA 2>&1 && exit 2)
-  allow_failure: True
-  artifacts:
-    paths:
-      - asv/results/
-    expire_in: 1 week
-    when: always
-
 # Ensure cpp examples compile and run
 linux-x86_64 cpp examples test:
   stage: test
@@ -879,6 +775,38 @@ clang compilation:
   extends:
     - .basic_test_changes_rules
     - .trigger_common
+
+# Run the airspeed velocity (ASV) benchmark suite. Auto-triggers on MR
+# pipelines whose diff touches any path that could affect a benchmark
+# result; the child pipeline itself further gates the heavy tile suite
+# on tile-relevant paths. `needs: []` so the trigger fires at pipeline
+# start and the child's build job is not blocked behind the parent's
+# test stage.
+asv benchmarks:
+  stage: child pipelines
+  trigger:
+    include: /.gitlab/ci/asv.yml
+  needs: []
+  extends:
+    - .trigger_common
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      changes:
+        - .gitlab-ci.yml
+        - .gitlab/ci/asv.yml
+        - asv/**/*
+        - asv.conf.json
+        - warp/**/*
+        - pyproject.toml
+        - deps/*
+        - build_lib.py
+        - build_llvm.py
+    # Manual fallback: any MR whose diff doesn't match the path filter
+    # above can still opt in to bench via a play button (e.g. tooling
+    # changes that affect codegen but live outside warp/**).
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      when: manual
+      allow_failure: true
 
 # ==============================================================================
 # Packaging Jobs
