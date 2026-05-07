@@ -151,7 +151,6 @@ templates_path = ["_templates"]
 
 html_theme = "nvidia_sphinx_theme"
 html_theme_options = {
-    "announcement": "Warp v1.13.0 is now available. See the <a href='https://github.com/NVIDIA/warp/releases/tag/v1.13.0'>release notes</a>.",
     "secondary_sidebar_items": ["page-toc", "edit-this-page"],
     "article_header_end": ["view-page-source.html"],
     "use_edit_page_button": True,
@@ -170,6 +169,43 @@ html_theme_options = {
     "navigation_depth": 2,
     "sidebar_includehidden": False,
 }
+
+# Enable the version switcher when DOC_VERSION is set (CI builds only).
+# Local builds without DOC_VERSION will not render the switcher.
+# nvidia_sphinx_theme places the switcher in navbar_center by default once
+# `switcher` is configured; explicitly setting `navbar_end` would put a
+# second copy there and render two "Choose Version" dropdowns side by side.
+#
+# `show_version_warning_banner` reads versions.json at runtime and renders
+# the "this is an older version" banner whenever the page's `version_match`
+# differs from the `preferred` entry. Bumping `preferred` in versions.json
+# (a one-line JSON edit during the next release) makes every archived
+# version's docs surface the banner without a rebuild.
+doc_version = os.environ.get("DOC_VERSION", "")
+if doc_version:
+    html_theme_options.update(
+        {
+            "check_switcher": False,
+            "switcher": {
+                "json_url": "https://nvidia.github.io/warp/versions.json",
+                "version_match": doc_version,
+            },
+            "show_version_warning_banner": True,
+        }
+    )
+
+    # Override Sphinx's ``release`` (which feeds ``DOCUMENTATION_OPTIONS.VERSION``,
+    # used by the PyData warning banner) for release-doc builds. The docs collapse
+    # patch releases into ``/vMAJOR.MINOR/`` and ``versions.json`` records the
+    # preferred entry as ``"version": "MAJOR.MINOR"``; without this override, a
+    # patch like ``1.12.1`` semver-compares strictly greater than the preferred
+    # ``1.12``, so the banner classifies the stable docs as "an unstable
+    # development version" and links "Switch to stable version" back to itself.
+    # We leave ``version`` (used in ``html_title``) at ``wp.__version__`` so the
+    # navbar still shows the precise patch version.
+    if re.fullmatch(r"\d+\.\d+", doc_version):
+        release = doc_version
+
 html_title = f"Warp {version}"
 html_context = {
     "github_user": "NVIDIA",
@@ -555,6 +591,35 @@ def rewrite_wp_aliases(app, what, name, obj, options, signature, return_annotati
     return _fix(signature), _fix(return_annotation)
 
 
+_RE_REPR_ADDRESS = re.compile(r"<([\w.]+) object at 0x[0-9a-f]+>")
+
+
+def strip_repr_addresses(app, doctree, docname):
+    """Drop memory addresses from default-repr leaks in the resolved doctree.
+
+    A handful of Warp attributes are documented without explicit type
+    annotations, so autodoc falls back to ``repr(obj)`` which for objects
+    without ``__repr__`` produces strings like ``<warp.types.array object
+    at 0x70faf939a250>`` (for class-level array sentinels) or ``<property
+    object at 0x...>`` (for descriptors).  The address differs every Python
+    process, which makes the rendered HTML byte-unstable across builds —
+    every push to ``main`` then writes a different ``gh-pages`` tree even
+    when the docs haven't changed.
+
+    ``sphinx.ext.autodoc.typehints`` injects these directly into the doctree
+    via the ``object-description-transform`` event, bypassing the
+    ``autodoc-process-signature`` and ``autodoc-process-docstring`` hooks,
+    so the cleanup has to happen at the doctree level.
+    """
+    for text_node in list(doctree.findall(docutils.nodes.Text)):
+        original = text_node.astext()
+        if "object at 0x" not in original:
+            continue
+        cleaned = _RE_REPR_ADDRESS.sub(r"<\1 object>", original)
+        if cleaned != original:
+            text_node.parent.replace(text_node, docutils.nodes.Text(cleaned))
+
+
 def resolve_wp_aliases(app, env, node, contnode):
     """Resolve ``wp.*`` cross-references by retrying as ``warp.*``.
 
@@ -644,3 +709,4 @@ def setup(app):
     # populates `env.tocs`.
     app.connect("doctree-read", drop_autosummary_toctrees, priority=400)
     app.connect("doctree-resolved", rewrite_internal_module_paths)
+    app.connect("doctree-resolved", strip_repr_addresses)
