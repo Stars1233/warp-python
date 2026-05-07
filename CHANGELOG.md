@@ -16,6 +16,11 @@
 - Add `--sanitize=<name>` build option to `build_lib.py`, enabling AddressSanitizer builds of
   `warp.dll` and `warp-clang.dll` on Windows, Linux, and macOS
   ([GH-1387](https://github.com/NVIDIA/warp/issues/1387)).
+- Add analytic backward passes for `wp.curlnoise()` (2D, 3D, 4D). Previously
+  the adjoints were stubbed as no-ops and `is_differentiable=False`, so
+  gradients silently dropped through curl-noise force fields in
+  differentiable simulations
+  ([GH-1012](https://github.com/NVIDIA/warp/issues/1012)).
 
 ### Removed
 
