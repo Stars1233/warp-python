@@ -7,7 +7,11 @@ pull request on GitHub or email a link to your arXiv preprint (preferred) or DOI
 
 ## 2026
 
+- **Learning-augmented robotic automation for real-world manufacturing**. *Y. Kim, Q. Nguyen, T. Kim, Y. Heo, J. Lee*. April 2026. [arXiv:2604.22235](https://arxiv.org/abs/2604.22235)
+- **FIT: A Large-Scale Dataset for Fit-Aware Virtual Try-On**. *J. Karras, Y. Wang, Y. Li, I. Kemelmacher-Shlizerman*. April 2026. [arXiv:2604.08526](https://arxiv.org/abs/2604.08526)
+- **Wave-appropriate reconstruction of compressible flows: physics-constrained acoustic dissipation and rank-1 entropy wave correction**. *A. S. Chamarthi*. April 2026. [arXiv:2604.02757](https://arxiv.org/abs/2604.02757)
 - **Discovering neural cohesive zone laws from displacement fields**. *G. Barkoulis Gavris, W. Sun*. April 2026. [DOI:10.1016/j.cma.2026.118733](https://doi.org/10.1016/j.cma.2026.118733)
+- **MGDP: Mastering a Generalized Depth Perception Model for Quadruped Locomotion**. *Y. Dong, J. Ma, Y. Lu, J. Zhang, W. Li, Y. Chen, T. Zhang, X. Chen, Z. Yu, P. Lu*. April 2026. [DOI:10.1002/advs.202524345](https://doi.org/10.1002/advs.202524345)
 - **CReF: Cross-modal and Recurrent Fusion for Depth-conditioned Humanoid Locomotion**. *Y. Hao, R. Yu, S. Luo, G. Zhang, J. Wu, Q. Zhu*. March 2026. [arXiv:2603.29452](https://arxiv.org/abs/2603.29452)
 - **PhySkin: Physics-based Bone-driven Neural Garment Simulation**. *A. Srivastava, H. Chen, R. Goldade, P. Herholz, Z. Jiang, G. W. Lin, L. Yang, N. Sarafianos, T. Stuyck, E. Larionov*. March 2026. [arXiv:2603.27013](https://arxiv.org/abs/2603.27013)
 - **Kamino: GPU-based Massively Parallel Simulation of Multi-Body Systems with Challenging Topologies**. *V. Tsounis, G. Maloisel, C. Schumacher, R. Grandia, A. Serifi, D. Müller, C. Amevor, T. Widmer, M. Bächer*. March 2026. [arXiv:2603.16536](https://arxiv.org/abs/2603.16536)
@@ -16,6 +20,7 @@ pull request on GitHub or email a link to your arXiv preprint (preferred) or DOI
 - **cuRoboV2: Dynamics-Aware Motion Generation with Depth-Fused Distance Fields for High-DoF Robots**. *B. Sundaralingam, A. Murali, S. Birchfield*. March 2026. [arXiv:2603.05493](https://arxiv.org/abs/2603.05493)
 - **GaussTwin: Unified Simulation and Correction with Gaussian Splatting for Robotic Digital Twins**. *Y. Cai, P. Jansonnie, C. de Farias, O. Arenz, J. Peters*. March 2026. [arXiv:2603.05108](https://arxiv.org/abs/2603.05108)
 - **X-Loco: Towards Generalist Humanoid Locomotion Control via Synergetic Policy Distillation**. *D. Wang, X. Wang, C. Zhang, J. Shi, Y. Zhao, C. Bai, X. Li*. March 2026. [arXiv:2603.03733](https://arxiv.org/abs/2603.03733)
+- **Perceptive Humanoid Parkour: Chaining Dynamic Human Skills via Motion Matching**. *Z. Wu, X. Huang, L. Yang, Y. Zhang, K. Sreenath, X. Chen, P. Abbeel, R. Duan, A. Kanazawa, C. Sferrazza, G. Shi, C. K. Liu*. February 2026. [arXiv:2602.15827](https://arxiv.org/abs/2602.15827)
 - **RPL: Learning Robust Humanoid Perceptive Locomotion on Challenging Terrains**. *Y. Zhang, Y. Seo, J. Chen, Y. Yuan, K. Sreenath, P. Abbeel, C. Sferrazza, K. Liu, R. Duan, G. Shi*. February 2026. [arXiv:2602.03002](https://arxiv.org/abs/2602.03002)
 - **TTT-Parkour: Rapid Test-Time Training for Perceptive Robot Parkour**. *S. Zhu, B. Ye, J. Wang, J. Chen, Z. Zhuang, L. Mou, R. Huang, H. Zhao*. February 2026. [arXiv:2602.02331](https://arxiv.org/abs/2602.02331)
 - **mjlab: A Lightweight Framework for GPU-Accelerated Robot Learning**. *K. Zakka, Q. Liao, B. Yi, L. L. Lay, K. Sreenath, P. Abbeel*. January 2026. [arXiv:2601.22074](https://arxiv.org/abs/2601.22074)
@@ -42,8 +47,9 @@ pull request on GitHub or email a link to your arXiv preprint (preferred) or DOI
 - **An End-to-End Framework for Modelling Pneumatic Soft Robots Based on Differentiable Finite Element Methods**. *S. Zhong, Y. Yao, P. Maiolino, I. Posner*. October 2025. [DOI:10.1109/lra.2025.3625507](https://doi.org/10.1109/lra.2025.3625507)
 - **MechStyle: Augmenting Generative AI with Mechanical Simulation to Create Stylized and Structurally Viable 3D Models**. *F. Faruqi, A. Abdel-Rahman, L. Tejedor, M. Nisser, J. Li, V. Phadnis, V. Jampani, N. Gershenfeld, M. Hofmann, S. Mueller*. September 2025. [arXiv:2509.20571](https://arxiv.org/abs/2509.20571)
 - **AERO-MPPI: Anchor-Guided Ensemble Trajectory Optimization for Agile Mapless Drone Navigation**. *X. Chen, R. Huang, L. Tang, L. Zhao*. September 2025. [arXiv:2509.17340](https://arxiv.org/abs/2509.17340)
+- **Differentiable Acoustic Radiance Transfer**. *S. Lee, M. Scerbo, S. Han, M. J. Choi, K. Lee, E. De Sena*. September 2025. [arXiv:2509.15946](https://arxiv.org/abs/2509.15946)
 - **Discovering neural elastoplasticity from kinematic observations**. *G. B. Gavris, W. Sun*. September 2025. [DOI:10.1073/pnas.2508732122](https://doi.org/10.1073/pnas.2508732122)
-
+- **Neural Robot Dynamics**. *J. Xu, E. Heiden, I. Akinola, D. Fox, M. Macklin, Y. Narang*. August 2025. [arXiv:2508.15755](https://arxiv.org/abs/2508.15755)
 - **Learning Simulatable Models of Cloth with Spatially-varying Constitutive Properties**. *G. Chen, S. Suri, Y. Wu, E. Voulga, D. I. W. Levin, D. K. Pai*. July 2025. [arXiv:2507.21288](https://arxiv.org/abs/2507.21288)
 - **GeoWarp: An automatically differentiable and GPU-accelerated implicit MPM framework for geomechanics based on NVIDIA Warp**. *Y. Zhao, X. Li, C. Jiang, J. Choo*. July 2025. [arXiv:2507.09435](https://arxiv.org/abs/2507.09435)
 - **Transforming Unstructured Hair Strands into Procedural Hair Grooms**. *W. Chang, A. L. Russell, S. Grabli, M. J. Chiang, C. Hery, D. Roble, R. Ramamoorthi, T. Li, O. Maury*. July 2025. [DOI:10.1145/3731168](https://doi.org/10.1145/3731168)
